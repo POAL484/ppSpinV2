@@ -1,4 +1,4 @@
-from ..types_spin.eventable import *
+from types_spin.eventable import *
 
 import datetime as dt
 from random import choice

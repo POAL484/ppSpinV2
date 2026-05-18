@@ -1,5 +1,5 @@
 from twitchio.ext.commands import Context
-from ..types_spin.cmd import Cmd, CfgInfo
+from types_spin.cmd import Cmd, CfgInfo
 from utils import more500send
 
 async def cmd_addmod(ctx: Context, user: str):

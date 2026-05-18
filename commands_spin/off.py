@@ -1,4 +1,4 @@
-from ..types_spin.cmd import Cmd, CfgInfo
+from types_spin.cmd import Cmd, CfgInfo
 from twitchio.ext.commands import Context
 
 async def cmd(ctx: Context):

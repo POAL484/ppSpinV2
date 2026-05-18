@@ -1,5 +1,5 @@
 from twitchio.ext.commands import Context
-from ..types_spin.cmd import Cmd, CfgInfo
+from types_spin.cmd import Cmd, CfgInfo
 import requests as req
 
 async def cmd(ctx: Context, url: str | None):
