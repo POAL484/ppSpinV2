@@ -1,7 +1,14 @@
-FROM python:3.11.14
+FROM python:3.12-slim AS builder
 
-COPY * /
+COPY requirements.txt ./
 
-RUN pip install -r requirements.txt
+RUN apt-get update && python -m venv /opt/venv/ && /opt/venv/bin/pip install --upgrade pip setuptools wheel
 
-CMD ["python", "botcore.py"]
+RUN /opt/venv/bin/pip install -r requirements.txt
+
+FROM python:3.12-slim AS runtime
+
+COPY --from=builder /opt/venv/ /opt/venv/
+COPY * ./
+
+CMD ["/opt/venv/bin/python", "botcore.py"]
