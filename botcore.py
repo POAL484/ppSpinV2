@@ -107,5 +107,6 @@ class Bot(commands.Bot):
         print(ctx.view.words)"""
 
 if __name__ == "__main__":
+    print("Created")
     bot = Bot(botconfig.BotConfig())
     bot.run()
