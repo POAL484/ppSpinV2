@@ -20,10 +20,14 @@ import fetch_emotes
 class Bot(commands.Bot):
 
     def __init__(self, botConfig: botconfig.BotConfig):
+        print("Starting...")
         self.botConfig = botConfig
         self.block = True
+        print(f"Connecting to mongo at: {botConfig.MONGODB_HOST.split('@')[-1]}")
         self.db = mongo.Db(botConfig.MONGODB_HOST)
+        print("Mongo connected")
         super().__init__(token=botConfig.token, prefix="*", initial_channels=["ppspin", "poal48"])
+        print("Client inited")
         self.start_time = dt.datetime.now()
         Cmd.bot = self
         Eventable.bot = self
