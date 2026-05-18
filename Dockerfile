@@ -18,4 +18,6 @@ COPY events_spin ./
 COPY types_spin ./
 COPY botconfig.py botcore.py .env fetch_emotes.py momsjokes.py mongo.py utils.py ./
 
+ENV PYTHONPATH=/app
+
 CMD ["/opt/venv/bin/python", "botcore.py"]
