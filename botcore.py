@@ -106,7 +106,6 @@ class Bot(commands.Bot):
     async def cmd_test(self, ctx: commands.Context):
         print(ctx.view.words)"""
 
-if __name__ == "__main__":
-    print("Created")
-    bot = Bot(botconfig.BotConfig())
-    bot.run()
+print("Created")
+bot = Bot(botconfig.BotConfig())
+bot.run()
