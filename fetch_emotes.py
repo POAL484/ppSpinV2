@@ -38,8 +38,11 @@ def fetch_ffz(twitch_id: int):
 
 async def fetch_channel(bot, twitch_id: int):
     emts = []
-    emts.extend(fetch_7tv(twitch_id))
-    emts.extend(fetch_bttv(twitch_id))
-    emts.extend(fetch_ffz(twitch_id))
+    try:
+        emts.extend(fetch_7tv(twitch_id))
+        emts.extend(fetch_bttv(twitch_id))
+        emts.extend(fetch_ffz(twitch_id))
+    except Exception as e:
+        await bot.logger(f"Не удалось обновить эмоуты {twitch_id}: {e}")
     return emts
     
