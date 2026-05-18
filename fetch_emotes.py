@@ -13,9 +13,9 @@ def get_id(emote_object: dict): return emote_object['id']
 def get_named_id(emote_object: dict): return {emote_object['name']: emote_object['id']}
 def get_named_platform(emote_object: dict): return {emote_object['name']: emote_object['platform']}
 
-def fetch_7tv(twtich_id: int):
+def fetch_7tv(twitch_id: int):
     #resp = req.get(f"https://7tv.io/v3/emote-sets/{set_id}").json()
-    resp = req.get(f"https://7tv.io/v3/users/twitch/{twtich_id}").json()
+    resp = req.get(f"https://7tv.io/v3/users/twitch/{twitch_id}").json()
     return list(map(get_7tv_emote, resp['emote_set']['emotes']))
 
 def fetch_bttv(twitch_id: int):
@@ -31,7 +31,7 @@ def fetch_ffz(twitch_id: int):
 
 async def fetch_channel(bot, twitch_id: int):
     emts = []
-    emts.extend(fetch_7tv(twitch_id))
+    #emts.extend(fetch_7tv(twitch_id))
     emts.extend(fetch_bttv(twitch_id))
     emts.extend(fetch_ffz(twitch_id))
     return emts
