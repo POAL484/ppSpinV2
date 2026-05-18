@@ -1,0 +1,6 @@
+log created
+bot ready, updating the channels
+channels updated
+fetching xpoal48 emotes
+xpoal48's emotes fetched
+bot finally ready

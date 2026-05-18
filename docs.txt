@@ -1,0 +1,32 @@
+configs
+
+- general:
+    chats
+    
+- chats:
+    name
+    active7tvSet
+    funckeys
+
+
+
+emts.{chnlname}:
+    id
+    name
+    used
+    pause
+    platform (7tv bttv ffz twitch)
+
+
+
+funckeys:
+yourmom - cmd
+clck - cmd
+emtstat - event - {platforms: ("7tv", "bttv", "ffz")}
+estat - cmd
+re - cmd
+re_event - event
+notify - event - {"title": {"msg": "-title", "announce": boolean, "massping": boolean, "mspe1": "", "mspe2": ""},
+    "live": {"msg": "-title", "announce": boolean, "massping": boolean, "mspe1": "", "mspe2": ""}, 
+    "offline": {"msg": "", "announce": boolean, "massping": boolean, "mspe1": "", "mspe2": ""}, }
+vanish - event
