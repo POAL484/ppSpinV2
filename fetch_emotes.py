@@ -1,6 +1,13 @@
 import requests as req
 from time import sleep
 
+import botconfig
+
+proxies = None
+
+#if botconfig.BotConfig.cfg.PROXY_7TV:
+#    proxies = {'http': botconfig.BotConfig.cfg.PROXY_7TV, 'https': botconfig.BotConfig.cfg.PROXY_7TV}
+
 def get_7tv_emote(emote_object: dict):
     return {"name": emote_object['name'], "id": emote_object['id'], "platform": "7tv"}
 def get_ffz_emote(emote_object: dict):
@@ -15,7 +22,7 @@ def get_named_platform(emote_object: dict): return {emote_object['name']: emote_
 
 def fetch_7tv(twitch_id: int):
     #resp = req.get(f"https://7tv.io/v3/emote-sets/{set_id}").json()
-    resp = req.get(f"https://7tv.io/v3/users/twitch/{twitch_id}").json()
+    resp = req.get(f"https://7tv.io/v3/users/twitch/{twitch_id}", proxies=proxies).json()
     return list(map(get_7tv_emote, resp['emote_set']['emotes']))
 
 def fetch_bttv(twitch_id: int):
@@ -31,7 +38,7 @@ def fetch_ffz(twitch_id: int):
 
 async def fetch_channel(bot, twitch_id: int):
     emts = []
-    #emts.extend(fetch_7tv(twitch_id))
+    emts.extend(fetch_7tv(twitch_id))
     emts.extend(fetch_bttv(twitch_id))
     emts.extend(fetch_ffz(twitch_id))
     return emts

@@ -4,7 +4,9 @@ from dotenv import load_dotenv
 ENVKEYS = ['IS_DEV', 'TOKEN', 'TOKEN_DEV', 'MONGODB_HOST']
 
 class BotConfig:
+    cfg = None
     def __init__(self):
+        self.__class__.cfg = self
         try:
             os.environ[ENVKEYS[0]]
         except KeyError:
