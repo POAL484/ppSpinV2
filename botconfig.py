@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-ENVKEYS = ['IS_DEV', 'TOKEN', 'TOKEN_DEV']
+ENVKEYS = ['IS_DEV', 'TOKEN', 'TOKEN_DEV', 'MONGODB_HOST']
 
 class BotConfig:
     def __init__(self):

@@ -22,7 +22,7 @@ class Bot(commands.Bot):
     def __init__(self, botConfig: botconfig.BotConfig):
         self.botConfig = botConfig
         self.block = True
-        self.db = mongo.Db()
+        self.db = mongo.Db(botConfig.MONGODB_HOST)
         super().__init__(token=botConfig.token, prefix="*", initial_channels=["ppspin", "poal48"])
         self.start_time = dt.datetime.now()
         Cmd.bot = self
