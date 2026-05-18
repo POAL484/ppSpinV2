@@ -1,5 +1,5 @@
 from twitchio.ext.commands import Context
-from types_spin.cmd import Cmd, CfgInfo
+from ..types_spin.cmd import Cmd, CfgInfo
 
 async def cmd(ctx: Context):
     if not Cmd.bot.check_mod(ctx.author.id): return

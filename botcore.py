@@ -6,14 +6,14 @@ import threading as thrd
 
 import botconfig
 import mongo
-from types_spin.logger import *
+from .types_spin.logger import *
 import utils
 
-from types_spin.cmd import *
-from types_spin.eventable import *
+from .types_spin.cmd import *
+from .types_spin.eventable import *
 
-from commands_spin import *
-from events_spin import *
+from .commands_spin import *
+from .events_spin import *
 
 import fetch_emotes
 

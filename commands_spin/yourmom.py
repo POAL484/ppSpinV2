@@ -1,5 +1,5 @@
 from twitchio.ext.commands import Context
-from types_spin.cmd import Cmd, CfgInfo
+from ..types_spin.cmd import Cmd, CfgInfo
 from momsjokes import jokes
 from random import choice
 

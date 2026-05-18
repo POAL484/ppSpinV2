@@ -1,6 +1,6 @@
 from twitchio.ext.commands import Context
-from types_spin.cmd import Cmd, CfgInfo
-from types_spin.argsParser import parse
+from ..types_spin.cmd import Cmd, CfgInfo
+from ..types_spin.argsParser import parse
 
 async def cmd(ctx: Context):
     if int(ctx.author.id) == 276061388:

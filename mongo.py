@@ -1,5 +1,5 @@
 import pymongo as mng
-from types_spin.cfgInfo import CfgInfo, CfgInfoType
+from .types_spin.cfgInfo import CfgInfo, CfgInfoType
 
 class Db:
     def __init__(self, host="mongodb://localhost:27017"):

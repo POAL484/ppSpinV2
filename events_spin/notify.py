@@ -1,5 +1,5 @@
-from types_spin.cmd import *
-from types_spin.eventable import *
+from ..types_spin.cmd import *
+from ..types_spin.eventable import *
 import utils
 
 import datetime as dt

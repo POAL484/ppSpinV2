@@ -1,4 +1,4 @@
-from types_spin.eventable import *
+from ..types_spin.eventable import *
 from twitchio.message import Message
 
 async def on_message(bot, message: Message):

@@ -1,5 +1,5 @@
 from twitchio.ext.commands import Context
-from types_spin.cmd import Cmd, CfgInfo
+from ..types_spin.cmd import Cmd, CfgInfo
 
 async def cmd(ctx: Context, emt_name: str | None):
     if not emt_name:
