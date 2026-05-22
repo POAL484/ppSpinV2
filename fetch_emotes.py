@@ -37,9 +37,9 @@ async def fetch_bttv(twitch_id: int, bot):
 async def fetch_ffz(twitch_id: int, bot):
     await bot.logger("tryna ffz")
     ffzEmotes = req.get(f"https://api.frankerfacez.com/v1/room/id/{twitch_id}", proxies=proxies).json()
-    await bot.logger("ffz:  " + str(ffzEmotes)[:30])
     if 'error' in ffzEmotes.keys(): return []
     ffzEmotes = ffzEmotes['sets'][list(ffzEmotes['sets'].keys())[0]]['emoticons']
+    await bot.logger("ffz:  " + str(ffzEmotes)[:30])
     return list(map(get_ffz_emote, ffzEmotes))
 
 async def fetch_channel(bot, twitch_id: int):
