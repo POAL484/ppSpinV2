@@ -1,5 +1,5 @@
 twitchio==2.8.2
-requests
+requests[socks]
 telebot
 pandas
 websockets
