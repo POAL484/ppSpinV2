@@ -28,12 +28,12 @@ async def fetch_7tv(twitch_id: int, bot):
     return list(map(get_7tv_emote, resp['emote_set']['emotes']))
 
 def fetch_bttv(twitch_id: int):
-    bttv =  req.get(f"https://api.betterttv.net/3/cached/users/twitch/{twitch_id}").json()
+    bttv =  req.get(f"https://api.betterttv.net/3/cached/users/twitch/{twitch_id}", proxies=proxies).json()
     if 'message' in bttv.keys(): return []
     return list(map(get_bttv_emote, bttv['channelEmotes']))
 
 def fetch_ffz(twitch_id: int):
-    ffzEmotes = req.get(f"https://api.frankerfacez.com/v1/room/id/{twitch_id}").json()
+    ffzEmotes = req.get(f"https://api.frankerfacez.com/v1/room/id/{twitch_id}", proxies=proxies).json()
     if 'error' in ffzEmotes.keys(): return []
     ffzEmotes = ffzEmotes['sets'][list(ffzEmotes['sets'].keys())[0]]['emoticons']
     return list(map(get_ffz_emote, ffzEmotes))
@@ -42,10 +42,16 @@ async def fetch_channel(bot, twitch_id: int):
     emts = []
     try:
         emts.extend(await fetch_7tv(twitch_id, bot))
+    except Exception as e:
+        await bot.logger(f"Не удалось 7tv обновить эмоуты {twitch_id}: {e}")
+    try:
         emts.extend(fetch_bttv(twitch_id))
+    except Exception as e:
+        await bot.logger(f"Не удалось bttv обновить эмоуты {twitch_id}: {e}")
+    try:
         emts.extend(fetch_ffz(twitch_id))
     except Exception as e:
-        await bot.logger(f"Не удалось обновить эмоуты {twitch_id}: {e}")
+        await bot.logger(f"Не удалось ffz обновить эмоуты {twitch_id}: {e}")
     await bot.logger(str(emts[:12]))
     return emts
     
