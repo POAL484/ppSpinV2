@@ -56,6 +56,6 @@ async def fetch_channel(bot, twitch_id: int):
         emts.extend(await fetch_ffz(twitch_id, bot))
     except Exception as e:
         await bot.logger(f"Не удалось ffz обновить эмоуты {twitch_id}: {e}")
-    await bot.logger(str(emts[:12]))
+    await bot.logger(str(emts[-1]))
     return emts
     
