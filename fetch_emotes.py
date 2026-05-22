@@ -24,7 +24,7 @@ async def fetch_7tv(twitch_id: int, bot):
     #resp = req.get(f"https://7tv.io/v3/emote-sets/{set_id}").json()
     await bot.logger("before req")
     resp = req.get(f"https://7tv.io/v3/users/twitch/{twitch_id}", proxies=proxies).json()
-    await bot.logger("after req " + resp.reason)
+    await bot.logger("after req " + str(resp)[:30])
     return list(map(get_7tv_emote, resp['emote_set']['emotes']))
 
 def fetch_bttv(twitch_id: int):
