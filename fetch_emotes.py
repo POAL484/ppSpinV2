@@ -41,7 +41,7 @@ def fetch_ffz(twitch_id: int):
 async def fetch_channel(bot, twitch_id: int):
     emts = []
     try:
-        await emts.extend(fetch_7tv(twitch_id, bot))
+        emts.extend(await fetch_7tv(twitch_id, bot))
         emts.extend(fetch_bttv(twitch_id))
         emts.extend(fetch_ffz(twitch_id))
     except Exception as e:
