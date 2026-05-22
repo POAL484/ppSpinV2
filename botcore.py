@@ -5,6 +5,9 @@ import datetime as dt
 import threading as thrd
 
 import botconfig
+
+botconfig.BotConfig()
+
 import mongo
 from types_spin.logger import *
 import utils
@@ -107,5 +110,5 @@ class Bot(commands.Bot):
         print(ctx.view.words)"""
 
 print("Created")
-bot = Bot(botconfig.BotConfig())
+bot = Bot(botconfig.BotConfig.cfg)
 bot.run()
