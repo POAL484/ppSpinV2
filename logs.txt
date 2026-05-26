@@ -1,6 +1,7 @@
 log created
-bot ready, updating the channels
+Config channels: poal48, the_il_
+trying to connect: the_il_
 channels updated
-fetching xpoal48 emotes
-xpoal48's emotes fetched
 bot finally ready
+123
+Config channels: poal48, the_il_

@@ -53,24 +53,28 @@ class Bot(commands.Bot):
     async def update_channels(self):
         chnls_connected = list(map(utils.get_name_in_Channel, self.connected_channels))
         chnls_config = list(map(lambda chnlCfg: chnlCfg['name'], self.db.configs.chats.find({})))
+        await self.logger("Config channels: " + ", ".join(chnls_config))
+        #await self.logger("Connected channels: " + ", ".join(chnls_connected))
         chnls_config.append("ppspin")
         for chnl in chnls_config:
             if not chnl in chnls_connected:
-                await self.join_channels((chnl, ))
+                await self.logger("trying to connect: " + chnl)
+                await self.join_channels([chnl])
         for chnl in chnls_connected:
             if not chnl in chnls_config:
-                await self.part_channels((chnl, ))
+                await self.part_channels([chnl])
         self.db.rebuildChannelsCfg(
             list(map(lambda cmd: cmd.cfgInfo, Cmd.insts)) + list(map(lambda event: event.cfgInfo, Eventable.insts))
         )
-        await self.logger("channels updated")
+        #await self.logger("channels updated")
+        #await self.logger("Connected channels: " + ", ".join(list(map(utils.get_name_in_Channel, self.connected_channels))))
 
     async def update_channels_emotes(self):
         self.emts = {}
         self.id_emts_by_name = {}
         self.platform_emts_by_name = {}
         for chnl in self.db.configs.chats.find({}):
-            await self.logger(f"fetching x{chnl['name']} emotes")
+            #await self.logger(f"fetching x{chnl['name']} emotes")
             emts = await fetch_emotes.fetch_channel(self, chnl['id'])
             self.emts[chnl['name']] = list(map(fetch_emotes.get_name, emts))
             self.id_emts_by_name[chnl['name']] = {}
@@ -79,13 +83,14 @@ class Bot(commands.Bot):
                 self.id_emts_by_name[chnl['name']].update(emote)
             for emote in list(map(fetch_emotes.get_named_platform, emts)):
                 self.platform_emts_by_name[chnl['name']].update(emote)
-            await self.logger(f"x{chnl['name']}'s emotes fetched")
+            #await self.logger(f"x{chnl['name']}'s emotes fetched")
 
     async def event_ready(self):
         self.logger = Logger(self.get_channel("ppspin"))
-        await self.logger("bot ready, updating the channels")
+        #await self.logger("bot ready, updating the channels")
         await self.update_channels()
         await self.update_channels_emotes()
+        await self.logger("channels updated")
         for i in Storage.insts: await i.init(self, i)
         self.botUser = (await self.fetch_channel("ppspin")).user
         await self.logger("bot finally ready")
@@ -94,6 +99,7 @@ class Bot(commands.Bot):
         #await utils.more500send("the_il_ brorAhuel "*500, self.get_channel("poal48"))
         #await utils.more500send("POAL48", self.get_channel("poal48"), "plenk", "plenk")
         self.block = False
+        await self.logger("123")
         thrd.Thread(target=lambda: asyncio.run_coroutine_threadsafe(self.ticker(), self.loop)).start()
 
     async def ticker(self):
@@ -105,9 +111,13 @@ class Bot(commands.Bot):
         if self.db.configs.mods.find_one({"id": int(twitch_id)}): return True
         return False
     
-    """@commands.command(name="test")
+    '''@commands.command(name="test")
     async def cmd_test(self, ctx: commands.Context):
-        print(ctx.view.words)"""
+        print("test triggered")
+        await ctx.send("123")
+        if not self.check_mod(ctx.author.id): return
+        await self.join_channels(["the_il_"])
+        await ctx.reply("Tomato")'''
 
 print("Created")
 bot = Bot(botconfig.BotConfig.cfg)

@@ -11,3 +11,5 @@ from .submassping import *
 from .ban_unban import *
 from .addmod_removemod_listmods import *
 from .rr import *
+from .updatechannels import *
+from .test import *
