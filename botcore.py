@@ -54,11 +54,9 @@ class Bot(commands.Bot):
         chnls_connected = list(map(utils.get_name_in_Channel, self.connected_channels))
         chnls_config = list(map(lambda chnlCfg: chnlCfg['name'], self.db.configs.chats.find({})))
         await self.logger("Config channels: " + ", ".join(chnls_config))
-        #await self.logger("Connected channels: " + ", ".join(chnls_connected))
         chnls_config.append("ppspin")
         for chnl in chnls_config:
             if not chnl in chnls_connected:
-                await self.logger("trying to connect: " + chnl)
                 await self.join_channels([chnl])
         for chnl in chnls_connected:
             if not chnl in chnls_config:
@@ -66,24 +64,30 @@ class Bot(commands.Bot):
         self.db.rebuildChannelsCfg(
             list(map(lambda cmd: cmd.cfgInfo, Cmd.insts)) + list(map(lambda event: event.cfgInfo, Eventable.insts))
         )
-        #await self.logger("channels updated")
-        #await self.logger("Connected channels: " + ", ".join(list(map(utils.get_name_in_Channel, self.connected_channels))))
 
     async def update_channels_emotes(self):
         self.emts = {}
-        self.id_emts_by_name = {}
-        self.platform_emts_by_name = {}
+        self.emts_by_name = {}
         for chnl in self.db.configs.chats.find({}):
-            #await self.logger(f"fetching x{chnl['name']} emotes")
             emts = await fetch_emotes.fetch_channel(self, chnl['id'])
+            coll_emts = self.db.db.get_collection(f"emts.{chnl['name']}")
+            for emt in emts:
+                if coll_emts.find_one({"name": {"$ne": emt['name']}, "pid": emt['pid']}):
+                    coll_emts.find_one_and_update({"pid": emt['pid']}, {"$set": {"name": emt['name']}})
             self.emts[chnl['name']] = list(map(fetch_emotes.get_name, emts))
-            self.id_emts_by_name[chnl['name']] = {}
-            self.platform_emts_by_name[chnl['name']] = {}
-            for emote in list(map(fetch_emotes.get_named_id, emts)):
-                self.id_emts_by_name[chnl['name']].update(emote)
-            for emote in list(map(fetch_emotes.get_named_platform, emts)):
-                self.platform_emts_by_name[chnl['name']].update(emote)
-            #await self.logger(f"x{chnl['name']}'s emotes fetched")
+            self.emts_by_name[chnl['name']] = {}
+            id_emts = list(map(lambda e: e['platform']+str(e['id']), emts))
+            for emtCNotPaused in coll_emts.find({"pause": False}):
+                if not emtCNotPaused['pid'] in id_emts:
+                    coll_emts.find_one_and_update({"_id": emtCNotPaused['_id']}, {"$set": {"pause": True}})
+            for emtCPaused in coll_emts.find({"pause": True}):
+                if emtCPaused['pid'] in id_emts:
+                    coll_emts.find_one_and_update({"_id": emtCPaused['_id']}, {"$set": {"pause": False}})
+            for emt in emts:
+                if emt['name'] in self.emts_by_name[chnl['name']].keys():
+                    self.emts_by_name[chnl['name']][emt['name']].append(emt)
+                else: self.emts_by_name[chnl['name']][emt['name']] = [emt]
+
 
     async def event_ready(self):
         self.logger = Logger(self.get_channel("ppspin"))
@@ -92,7 +96,7 @@ class Bot(commands.Bot):
         await self.update_channels_emotes()
         await self.logger("channels updated")
         for i in Storage.insts: await i.init(self, i)
-        self.botUser = (await self.fetch_channel("ppspin")).user
+        self.botUser = (await self.fetch_channel("feelsdyslexiaman" if self.botConfig.IS_DEV == "true" else "ppspin")).user
         await self.logger("bot finally ready")
         print("ppSpin forsenRun")
         await self.get_channel("poal48").send("Подключен! ppSpin")

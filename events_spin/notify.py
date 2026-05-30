@@ -11,7 +11,7 @@ async def makeMessage(bot, cfg: dict, chnl: str, eventType: str):
         pu = bot.create_user(bot.db.configs.chats.find_one({"name": chnl})['id'], chnl)
         await pu.chat_announcement(bot.botConfig.token, bot.botUser.id, cfg['messages'][eventType]['msg'].replace("-title", cfg['lastData']['title']).replace("-game", cfg['lastData']['game_name']))
     if cfg['messages'][eventType]['masspingEnabled']:
-        tblk = cfg['messages'][eventType]['massping']
+        tblk = list(map(lambda us: us['display'], cfg['massping'][eventType]))
         em1 = cfg['messages'][eventType]['mStart']
         em2 = cfg['messages'][eventType]['mEnd']
         if not em1: em1 = ''
@@ -19,25 +19,30 @@ async def makeMessage(bot, cfg: dict, chnl: str, eventType: str):
         await utils.more500send(" ".join(tblk), bot.get_channel(chnl), em1, em2)
 
 async def init_storage(bot, storage):
-    storage.timer = dt.datetime.now()
+    chnls = bot.db.getListChannelsEnabled(CfgInfoType.Event, "re")
+    storage.timer = {}
+    for chnl in chnls:
+        storage.timer[chnl] = dt.datetime.now()
+
 
 async def tick_event(bot, chnl: str, storage):
-    #if (dt.datetime.now() - storage.timer).total_seconds() < 5: return 
-    #storage.timer = dt.datetime.now()
-    #for chnl in bot.db.getListChannelsEnabled(CfgInfoType.Event, "notify"):
+    if (dt.datetime.now() - storage.timer[chnl]).total_seconds() < 5: return 
+    storage.timer[chnl] = dt.datetime.now()
     cfg = bot.db.getCfg(CfgInfoType.Event, "notify", chnl)
     if not cfg: return
-    if cfg['eventsEnabled']['title']:
+    if cfg['eventsEnabled']['title'] or cfg['eventsEnabled']['game']:
         info = await bot.fetch_channel(chnl)
         if info.title != cfg['lastData']['title']:
             cfg['lastData']['title'] = info.title
             bot.db.updateCfg(CfgInfoType.Event, "notify", chnl, cfg)
-            await makeMessage(bot, cfg, chnl, "title")
+            if cfg['eventsEnabled']['title']:
+                await makeMessage(bot, cfg, chnl, "title")
         if info.game_id != cfg['lastData']['game_id']:
             cfg['lastData']['game_id'] = info.game_id
             cfg['lastData']['game_name'] = info.game_name
             bot.db.updateCfg(CfgInfoType.Event, "notify", chnl, cfg)
-            await makeMessage(bot, cfg, chnl, "game")
+            if cfg['eventsEnabled']['game']:
+                await makeMessage(bot, cfg, chnl, "game")
     if cfg['eventsEnabled']['online'] or cfg['eventsEnabled']['offline']:
         info_chnls = await bot.search_channels(chnl)
         info = None
@@ -57,20 +62,22 @@ async def tick_event(bot, chnl: str, storage):
 
 Eventable(Eventable.EventType.TICK,
           CfgInfo({
-              "lastData": {"title": "", "online": False, "game_id": "", "game_name": ""}, \
+              "lastData": {"title": "", "online": False, "game_id": "", "game_name": ""},
               "eventsEnabled": {"title": False, "online": False, "offline": False, "game": False},
-              "messages": {"title": {"msg":"", "masspingEnabled": False, "mStart": "", "mEnd": "", "massping": [], "announce": False},
-                           "online": {"msg":"", "masspingEnabled": False, "mStart": "", "mEnd": "", "massping": [], "announce": False},
-                           "offline": {"msg":"", "masspingEnabled": False, "mStart": "", "mEnd": "", "massping": [], "announce": False},
-                           "game": {"msg":"", "masspingEnabled": False, "mStart": "", "mEnd": "", "massping": [], "announce": False}}},
+              "messages": {"title": {"msg":"", "masspingEnabled": False, "mStart": "", "mEnd": "", "announce": False},
+                           "online": {"msg":"", "masspingEnabled": False, "mStart": "", "mEnd": "", "announce": False},
+                           "offline": {"msg":"", "masspingEnabled": False, "mStart": "", "mEnd": "", "announce": False},
+                           "game": {"msg":"", "masspingEnabled": False, "mStart": "", "mEnd": "", "announce": False}},
+              "massping": {"title": [], "online": [], "offline": [], "game": []}},
           "Уведомления о событиях: смена названия стрима, начало/конец стрима, смена категории стрима",
           {
               "lastData": {"title": "Служебное: последнее название стрима", "online": "Служебное: включен ли стрим", "game_id": "Служебное: id последней категории стрима", "game_name": "Служебное: название последней категории стрима"},
               "eventsEnabled": {"title": "Включено ли уведомление о смене названия стрима", "online": "Включено ли уведомление о начале стрима", "offline": "Включено ли уведомление об окончании стрима", "game": "Включено ли уведомление о смене категории"},
-              "messages": {"title": {"msg": "Сообщение во время события", "masspingEnabled": "Включено/ны сообщение/ия массового пинга. Также настраивать возможность подписаться на событие в *submassping", "mStart": "Начало сообщения/ий массового пинга", "mEnd": "Окончание сообщения/ий массового пинга", "massping": "Пользователи, подписавшиеся на событие", "announce": "Использовать ли /announce для сообщения оповещения"},
-                           "online": {"msg": "Сообщение во время события", "masspingEnabled": "Включено/ны сообщение/ия массового пинга. Также настраивать возможность подписаться на событие в *submassping", "mStart": "Начало сообщения/ий массового пинга", "mEnd": "Окончание сообщения/ий массового пинга", "massping": "Пользователи, подписавшиеся на событие", "announce": "Использовать ли /announce для сообщения оповещения"},
-                           "offline": {"msg": "Сообщение во время события", "masspingEnabled": "Включено/ны сообщение/ия массового пинга. Также настраивать возможность подписаться на событие в *submassping", "mStart": "Начало сообщения/ий массового пинга", "mEnd": "Окончание сообщения/ий массового пинга", "massping": "Пользователи, подписавшиеся на событие", "announce": "Использовать ли /announce для сообщения оповещения"},
-                           "game": {"msg": "Сообщение во время события", "masspingEnabled": "Включено/ны сообщение/ия массового пинга. Также настраивать возможность подписаться на событие в *submassping", "mStart": "Начало сообщения/ий массового пинга", "mEnd": "Окончание сообщения/ий массового пинга", "massping": "Пользователи, подписавшиеся на событие", "announce": "Использовать ли /announce для сообщения оповещения"}},
+              "messages": {"title": {"msg": "Сообщение во время события", "masspingEnabled": "Включено/ны сообщение/ия массового пинга. Также настраивать возможность подписаться на событие в *submassping", "mStart": "Начало сообщения/ий массового пинга", "mEnd": "Окончание сообщения/ий массового пинга", "announce": "Использовать ли /announce для сообщения оповещения"},
+                           "online": {"msg": "Сообщение во время события", "masspingEnabled": "Включено/ны сообщение/ия массового пинга. Также настраивать возможность подписаться на событие в *submassping", "mStart": "Начало сообщения/ий массового пинга", "mEnd": "Окончание сообщения/ий массового пинга", "announce": "Использовать ли /announce для сообщения оповещения"},
+                           "offline": {"msg": "Сообщение во время события", "masspingEnabled": "Включено/ны сообщение/ия массового пинга. Также настраивать возможность подписаться на событие в *submassping", "mStart": "Начало сообщения/ий массового пинга", "mEnd": "Окончание сообщения/ий массового пинга", "announce": "Использовать ли /announce для сообщения оповещения"},
+                           "game": {"msg": "Сообщение во время события", "masspingEnabled": "Включено/ны сообщение/ия массового пинга. Также настраивать возможность подписаться на событие в *submassping", "mStart": "Начало сообщения/ий массового пинга", "mEnd": "Окончание сообщения/ий массового пинга", "announce": "Использовать ли /announce для сообщения оповещения"}},
+              "massping": {"title": "Служебное: список пользователей, подписанных на title", "online": "Служебное: список пользователей, подписанных на online", "offline": "Служебное: список пользователей, подписанных на offline", "game": "Служебное: список пользователей, подписанных на game"}
           }, name="notify"),
           tick_event, Storage(init_storage))
 
@@ -92,7 +99,11 @@ messages:
         masspingEnabled - bool
         mStart - str
         mEnd - str
-        massping - list[str]
         announce - bool
-
+massping:
+    [events]: list[{
+            id: str (twitch id)
+            display: str (twitch display name)
+        }]
+        
 """

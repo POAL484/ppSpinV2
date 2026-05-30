@@ -1,7 +1,2 @@
 log created
-Config channels: poal48, the_il_
-trying to connect: the_il_
-channels updated
-bot finally ready
-123
-Config channels: poal48, the_il_
+Config channels: poal48

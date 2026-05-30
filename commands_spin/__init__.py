@@ -13,3 +13,5 @@ from .addmod_removemod_listmods import *
 from .rr import *
 from .updatechannels import *
 from .test import *
+from .addchannel import *
+from .etop import *
