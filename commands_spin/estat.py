@@ -10,7 +10,7 @@ async def cmd(ctx: Context, emt_name: str | None, emt_index: str | None):
         await ctx.reply("Информация об эмоуте отсуствует 🤨")
         return
     if len(emt) > 1:
-        ind = emt_index if emt_index else 0
+        ind = emt_index if emt_index else 1
         try: ind = int(ind)
         except ValueError:
             await ctx.reply("Ошибка: Индекс не число!")
