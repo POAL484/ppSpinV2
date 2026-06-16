@@ -31,6 +31,4 @@ COPY utils.py .
 
 ENV PYTHONPATH=/app
 
-RUN ls -R /app
-
 CMD ["/opt/venv/bin/python", "botcore.py"]

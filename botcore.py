@@ -4,6 +4,9 @@ import twitchio as tio
 import datetime as dt
 import threading as thrd
 
+import websockets as webs
+import json
+
 import botconfig
 
 botconfig.BotConfig()
@@ -32,6 +35,7 @@ class Bot(commands.Bot):
         super().__init__(token=botConfig.token, prefix="*", initial_channels=["ppspin", "poal48"])
         print("Client inited")
         self.start_time = dt.datetime.now()
+        self.internal_api_ws_client: None | webs.ClientConnection = None
         Cmd.bot = self
         Eventable.bot = self
         for cmd in Cmd.insts:
@@ -105,11 +109,24 @@ class Bot(commands.Bot):
         self.block = False
         await self.logger("123")
         thrd.Thread(target=lambda: asyncio.run_coroutine_threadsafe(self.ticker(), self.loop)).start()
+        thrd.Thread(target=lambda: asyncio.run_coroutine_threadsafe(self.internal_api(), self.loop)).start()
 
     async def ticker(self):
         while 1:
             await asyncio.sleep(0.05)
             await pingEvent(Eventable.EventType.TICK, self)
+
+    async def internal_api(self):
+        while 1:
+            try:
+                async for ws in webs.connect(botconfig.BotConfig.cfg.INTERNAL_API):
+                    await ws.send(json.dumps({"client": "twitch-bot", "token": botconfig.BotConfig.cfg.IAPI_TOKEN}))
+                    self.internal_api_ws_client = ws
+                    async for msg in ws:
+                        await pingEvent(Eventable.EventType.TEST, json.loads(msg))
+            except Exception:
+                await self.logger("ошибка при подключении к internal FeelsDankMan")
+                await asyncio.sleep(5)
 
     def check_mod(self, twitch_id: int):
         if self.db.configs.mods.find_one({"id": int(twitch_id)}): return True

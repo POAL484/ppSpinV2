@@ -5,7 +5,7 @@ from .cfgInfo import CfgInfo, CfgInfoType
 class Eventable:
     insts = []
     bot = None
-    class EventType(Enum): MESSAGE = 1; TICK = 2
+    class EventType(Enum): MESSAGE = 1; TICK = 2; TEST = 3
     def __init__(self, target: EventType, cfgInfo: CfgInfo, func, storage: Storage|None = None):
         self.__class__.insts.append(self)
         self.target = target
@@ -29,3 +29,5 @@ async def pingEvent(target: Eventable.EventType, *args):
                 for chnl in Eventable.bot.db.getListChannelsEnabled(CfgInfoType.Event, event.cfgInfo.name):
                     if event.storage: await event.func(*args, chnl, event.storage)
                     else: await event.func(*args, chnl)
+            elif target == Eventable.EventType.TEST:
+                await event.func(*args)

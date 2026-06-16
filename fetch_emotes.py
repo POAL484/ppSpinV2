@@ -5,8 +5,8 @@ import botconfig
 
 proxies = None
 
-if botconfig.BotConfig.cfg.PROXY_7TV:
-    proxies = {'http': botconfig.BotConfig.cfg.PROXY_7TV, 'https': botconfig.BotConfig.cfg.PROXY_7TV}
+if botconfig.BotConfig.cfg.PROXY:
+    proxies = {'http': botconfig.BotConfig.cfg.PROXY, 'https': botconfig.BotConfig.cfg.PROXY}
 
 def get_7tv_emote(emote_object: dict):
     return {"name": emote_object['name'], "id": emote_object['id'], "platform": "7tv", "pid": "7tv"+str(emote_object['id'])}

@@ -1,9 +1,5 @@
 twitchio==2.8.2
 requests[socks]
-telebot
-pandas
 websockets
-pillow
-beautifulsoup4
 pymongo
 dotenv

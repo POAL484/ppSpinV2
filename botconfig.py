@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-ENVKEYS = ['IS_DEV', 'TOKEN', 'TOKEN_DEV', 'MONGODB_HOST', 'PROXY_7TV']
+ENVKEYS = ['IS_DEV', 'TOKEN', 'TOKEN_DEV', 'MONGODB_HOST', 'PROXY', 'INTERNAL_API', 'IAPI_TOKEN']
 
 class BotConfig:
     cfg = None
